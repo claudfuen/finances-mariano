@@ -8,31 +8,31 @@ export const budgetConfig: BudgetConfig = {
       name: "Claudio Salary (NY)",
       source: "salary",
       amount: 13760,
-      month: "2025-01",
+      month: "2026-01",
     },
     {
       id: "inc-2a",
       name: "Katya Salary (NY)",
       source: "salary",
       amount: 8250,
-      month: "2025-01",
+      month: "2026-01",
     },
-    // Feb+: FL income (no state/city tax)
+    // Feb+: FL income (actual net from paystubs, no medical deduction)
     {
       id: "inc-1",
       name: "Claudio Salary",
       source: "salary",
-      amount: 15600,
+      amount: 15190,
       recurrence: "monthly",
-      startDate: "2025-02",
+      startDate: "2026-02",
     },
     {
       id: "inc-2",
       name: "Katya Salary",
       source: "salary",
-      amount: 9400,
+      amount: 9483,
       recurrence: "monthly",
-      startDate: "2025-02",
+      startDate: "2026-02",
     },
   ],
   expenses: [
@@ -43,7 +43,7 @@ export const budgetConfig: BudgetConfig = {
       name: "Rent (NY)",
       category: "housing",
       amount: 6800,
-      month: "2025-01",
+      month: "2026-01",
     },
     // Feb+: FL rent (incl. gym & parking)
     {
@@ -51,7 +51,7 @@ export const budgetConfig: BudgetConfig = {
       name: "Rent (incl. gym & parking)",
       category: "housing",
       amount: 3850,
-      startDate: "2025-02",
+      startDate: "2026-02",
     },
 
     // === TRANSPORTATION (2 Teslas) ===
@@ -62,20 +62,8 @@ export const budgetConfig: BudgetConfig = {
       amount: 441.04,
     },
     {
-      id: "exp-tesla-katya",
-      name: "Tesla Lease - Katya",
-      category: "transportation",
-      amount: 441.04,
-    },
-    {
       id: "exp-geico-claudio",
       name: "Geico Insurance - Claudio",
-      category: "transportation",
-      amount: 288.79,
-    },
-    {
-      id: "exp-geico-katya",
-      name: "Geico Insurance - Katya",
       category: "transportation",
       amount: 288.79,
     },
@@ -83,7 +71,7 @@ export const budgetConfig: BudgetConfig = {
       id: "exp-supercharging",
       name: "Tesla Supercharging",
       category: "transportation",
-      amount: 25,
+      amount: 50,
     },
     {
       id: "exp-tesla-connectivity",
@@ -95,10 +83,10 @@ export const budgetConfig: BudgetConfig = {
     // === UTILITIES ===
     {
       id: "exp-electric",
-      name: "Electric (incl. Tesla charging)",
+      name: "Electric",
       category: "utilities",
-      amount: 200,
-      startDate: "2025-02", // FL only
+      amount: 120,
+      startDate: "2026-02", // FL only
     },
     {
       id: "exp-internet",
@@ -147,34 +135,10 @@ export const budgetConfig: BudgetConfig = {
       amount: 19.99,
     },
     {
-      id: "exp-playstation",
-      name: "PlayStation Plus",
-      category: "entertainment",
-      amount: 21,
-    },
-    {
-      id: "exp-peacock",
-      name: "Peacock",
-      category: "entertainment",
-      amount: 10.99,
-    },
-    {
-      id: "exp-paramount",
-      name: "Paramount+",
-      category: "entertainment",
-      amount: 5.99,
-    },
-    {
       id: "exp-prime",
       name: "Amazon Prime",
       category: "entertainment",
       amount: 16.32,
-    },
-    {
-      id: "exp-audible",
-      name: "Audible",
-      category: "entertainment",
-      amount: 11,
     },
     {
       id: "exp-uberone",
@@ -182,43 +146,13 @@ export const budgetConfig: BudgetConfig = {
       category: "entertainment",
       amount: 9.99,
     },
-    {
-      id: "exp-espn",
-      name: "ESPN+",
-      category: "entertainment",
-      amount: 12.99,
-    },
-    {
-      id: "exp-max",
-      name: "Max (HBO)",
-      category: "entertainment",
-      amount: 17.99,
-    },
 
     // === SUBSCRIPTIONS (Work/Productivity) ===
-    {
-      id: "exp-vercel",
-      name: "Vercel",
-      category: "other",
-      amount: 62,
-    },
     {
       id: "exp-cursor",
       name: "Cursor AI",
       category: "other",
       amount: 22,
-    },
-    {
-      id: "exp-slack",
-      name: "Slack",
-      category: "other",
-      amount: 15,
-    },
-    {
-      id: "exp-suno",
-      name: "Suno AI",
-      category: "other",
-      amount: 10,
     },
 
     // === SUBSCRIPTIONS (Personal) ===
@@ -244,7 +178,7 @@ export const budgetConfig: BudgetConfig = {
     // TODO: Define savings goals
   ],
   settings: {
-    year: 2025,
+    year: 2026,
     currency: "USD",
   },
 }
