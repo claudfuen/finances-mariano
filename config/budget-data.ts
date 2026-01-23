@@ -182,7 +182,7 @@ export const budgetConfig: BudgetConfig = {
   ],
   cashReserve: {
     target: 20000,
-    current: 20000,
+    current: 0, // Starting empty as of Jan 2026
   },
   savingsGoals: [
     // TODO: Define savings goals
