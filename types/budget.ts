@@ -92,12 +92,19 @@ export interface SavingsGoal {
   monthlyContribution?: number
 }
 
+// Cash reserve configuration
+export interface CashReserve {
+  target: number
+  current: number
+}
+
 // Budget configuration (aggregate type)
 export interface BudgetConfig {
   income: IncomeEntry[]
   expenses: ExpenseEntry[]
   investments: Investment[]
   savingsGoals: SavingsGoal[]
+  cashReserve?: CashReserve
   settings: {
     year: number
     currency: string
@@ -141,6 +148,11 @@ export interface PLData {
     total: PLRow
   }
   unallocated: PLRow
+  balances?: {
+    cash: PLRow
+    investments: PLRow
+    netWorth: PLRow
+  }
 }
 
 // Computed types

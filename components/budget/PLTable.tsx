@@ -263,6 +263,17 @@ export function PLTable({ data }: PLTableProps) {
 
           {/* UNALLOCATED */}
           <TableRow row={data.unallocated} months={data.months} variant="grand-total" />
+
+          {/* BALANCES */}
+          {data.balances && (
+            <>
+              <Separator />
+              <SectionHeader title="Balances" />
+              <TableRow row={data.balances.cash} months={data.months} variant="item" />
+              <TableRow row={data.balances.investments} months={data.months} variant="item" />
+              <TableRow row={data.balances.netWorth} months={data.months} variant="grand-total" />
+            </>
+          )}
         </tbody>
       </table>
     </div>

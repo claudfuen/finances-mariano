@@ -172,8 +172,18 @@ export const budgetConfig: BudgetConfig = {
     },
   ],
   investments: [
-    // TODO: Add actual investment accounts
+    {
+      id: "inv-robinhood",
+      name: "Robinhood",
+      balance: 101000,
+      monthlyContribution: 0, // Dynamic - all surplus after cash buffer
+      expectedReturn: 0.07, // 7% annual market average
+    },
   ],
+  cashReserve: {
+    target: 20000,
+    current: 20000,
+  },
   savingsGoals: [
     // TODO: Define savings goals
   ],
