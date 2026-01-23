@@ -63,7 +63,14 @@ function createRow(
 /**
  * Sum multiple PLRows into a single row
  */
-function sumRows(id: string, name: string, depth: number, rows: PLRow[], options: { isSubtotal?: boolean } = {}): PLRow {
+function sumRows(
+  id: string,
+  name: string,
+  depth: number,
+  rows: PLRow[],
+  options: { isSubtotal?: boolean } = {},
+  months?: string[]
+): PLRow {
   const values: Record<string, number> = {}
   let ytd = 0
 
@@ -72,6 +79,11 @@ function sumRows(id: string, name: string, depth: number, rows: PLRow[], options
       values[month] = rows.reduce((sum, row) => sum + (row.values[month] || 0), 0)
     })
     ytd = rows.reduce((sum, row) => sum + row.ytd, 0)
+  } else if (months) {
+    // Initialize with zeros for empty rows
+    months.forEach((month) => {
+      values[month] = 0
+    })
   }
 
   return {
@@ -181,18 +193,35 @@ export function generatePLData(config: BudgetConfig): PLData {
   const investmentRows: PLRow[] = config.investments.map((inv) =>
     createRow(inv.id, inv.name, 2, months, () => inv.monthlyContribution)
   )
-  const investmentTotal = sumRows("allocation-investments-total", "Total Investments", 1, investmentRows, {
-    isSubtotal: true,
-  })
+  const investmentTotal = sumRows(
+    "allocation-investments-total",
+    "Total Investments",
+    1,
+    investmentRows,
+    { isSubtotal: true },
+    months
+  )
 
   const savingsGoalRows: PLRow[] = config.savingsGoals
     .filter((goal) => goal.monthlyContribution && goal.monthlyContribution > 0)
     .map((goal) => createRow(goal.id, goal.name, 2, months, () => goal.monthlyContribution || 0))
-  const savingsGoalTotal = sumRows("allocation-goals-total", "Total Savings Goals", 1, savingsGoalRows, {
-    isSubtotal: true,
-  })
+  const savingsGoalTotal = sumRows(
+    "allocation-goals-total",
+    "Total Savings Goals",
+    1,
+    savingsGoalRows,
+    { isSubtotal: true },
+    months
+  )
 
-  const totalAllocationRow = sumRows("allocation-total", "TOTAL ALLOCATED", 0, [investmentTotal, savingsGoalTotal])
+  const totalAllocationRow = sumRows(
+    "allocation-total",
+    "TOTAL ALLOCATED",
+    0,
+    [investmentTotal, savingsGoalTotal],
+    {},
+    months
+  )
 
   // === UNALLOCATED ===
   const unallocatedRow = createRow("unallocated", "UNALLOCATED SURPLUS", 0, months, (month) => {

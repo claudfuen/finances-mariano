@@ -230,39 +230,44 @@ export function PLTable({ data }: PLTableProps) {
           {/* NET CASH FLOW */}
           <TableRow row={data.netCashFlow} months={data.months} variant="grand-total" />
 
-          <Separator />
+          {/* Only show allocations if there are fixed monthly contributions */}
+          {data.allocations.total.ytd > 0 && (
+            <>
+              <Separator />
 
-          {/* ALLOCATIONS */}
-          <SectionHeader title="Allocations" />
+              {/* ALLOCATIONS */}
+              <SectionHeader title="Allocations" />
 
-          {/* Investments */}
-          <tr className="bg-muted/20">
-            <td colSpan={14} className="py-1 px-4 text-xs font-medium text-muted-foreground">
-              Investments
-            </td>
-          </tr>
-          {data.allocations.investments.rows.map((row) => (
-            <TableRow key={row.id} row={row} months={data.months} variant="item" />
-          ))}
-          <TableRow row={data.allocations.investments.total} months={data.months} variant="subtotal" />
+              {/* Investments */}
+              <tr className="bg-muted/20">
+                <td colSpan={14} className="py-1 px-4 text-xs font-medium text-muted-foreground">
+                  Investments
+                </td>
+              </tr>
+              {data.allocations.investments.rows.map((row) => (
+                <TableRow key={row.id} row={row} months={data.months} variant="item" />
+              ))}
+              <TableRow row={data.allocations.investments.total} months={data.months} variant="subtotal" />
 
-          {/* Savings Goals */}
-          <tr className="bg-muted/20">
-            <td colSpan={14} className="py-1 px-4 text-xs font-medium text-muted-foreground">
-              Savings Goals
-            </td>
-          </tr>
-          {data.allocations.savingsGoals.rows.map((row) => (
-            <TableRow key={row.id} row={row} months={data.months} variant="item" />
-          ))}
-          <TableRow row={data.allocations.savingsGoals.total} months={data.months} variant="subtotal" />
+              {/* Savings Goals */}
+              <tr className="bg-muted/20">
+                <td colSpan={14} className="py-1 px-4 text-xs font-medium text-muted-foreground">
+                  Savings Goals
+                </td>
+              </tr>
+              {data.allocations.savingsGoals.rows.map((row) => (
+                <TableRow key={row.id} row={row} months={data.months} variant="item" />
+              ))}
+              <TableRow row={data.allocations.savingsGoals.total} months={data.months} variant="subtotal" />
 
-          <TableRow row={data.allocations.total} months={data.months} variant="total" />
+              <TableRow row={data.allocations.total} months={data.months} variant="total" />
 
-          <Separator />
+              <Separator />
 
-          {/* UNALLOCATED */}
-          <TableRow row={data.unallocated} months={data.months} variant="grand-total" />
+              {/* UNALLOCATED */}
+              <TableRow row={data.unallocated} months={data.months} variant="grand-total" />
+            </>
+          )}
 
           {/* BALANCES */}
           {data.balances && (
