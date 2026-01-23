@@ -1,0 +1,247 @@
+import type {
+  BudgetConfig,
+  PLData,
+  PLRow,
+  ExpenseCategory,
+  RecurringExpense,
+} from "@/types/budget"
+import { isRecurringIncome, isOneTimeIncome, isRecurringExpense, isOneTimeExpense } from "@/types/budget"
+import { normalizeToMonthly, isRecurringActiveInMonth } from "./income"
+import { isRecurringExpenseActiveInMonth } from "./expenses"
+
+const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
+  housing: "Housing",
+  transportation: "Transportation",
+  utilities: "Utilities",
+  food: "Food",
+  healthcare: "Healthcare",
+  insurance: "Insurance",
+  entertainment: "Entertainment",
+  personal: "Personal",
+  debt: "Debt",
+  other: "Other",
+}
+
+/**
+ * Generate array of month strings for a year
+ */
+function generateMonthsForYear(year: number): string[] {
+  return Array.from({ length: 12 }, (_, i) => `${year}-${String(i + 1).padStart(2, "0")}`)
+}
+
+/**
+ * Create a PLRow with values for each month
+ */
+function createRow(
+  id: string,
+  name: string,
+  depth: number,
+  months: string[],
+  getValueForMonth: (month: string) => number,
+  options: { isGroup?: boolean; isSubtotal?: boolean } = {}
+): PLRow {
+  const values: Record<string, number> = {}
+  let ytd = 0
+
+  months.forEach((month) => {
+    const value = getValueForMonth(month)
+    values[month] = value
+    ytd += value
+  })
+
+  return {
+    id,
+    name,
+    isGroup: options.isGroup ?? false,
+    isSubtotal: options.isSubtotal ?? false,
+    depth,
+    values,
+    ytd,
+  }
+}
+
+/**
+ * Sum multiple PLRows into a single row
+ */
+function sumRows(id: string, name: string, depth: number, rows: PLRow[], options: { isSubtotal?: boolean } = {}): PLRow {
+  const values: Record<string, number> = {}
+  let ytd = 0
+
+  if (rows.length > 0) {
+    Object.keys(rows[0].values).forEach((month) => {
+      values[month] = rows.reduce((sum, row) => sum + (row.values[month] || 0), 0)
+    })
+    ytd = rows.reduce((sum, row) => sum + row.ytd, 0)
+  }
+
+  return {
+    id,
+    name,
+    isGroup: false,
+    isSubtotal: options.isSubtotal ?? false,
+    depth,
+    values,
+    ytd,
+  }
+}
+
+/**
+ * Generate the full P&L data structure from budget config
+ */
+export function generatePLData(config: BudgetConfig): PLData {
+  const { year } = config.settings
+  const months = generateMonthsForYear(year)
+
+  // === INCOME ===
+  const recurringIncomeRows: PLRow[] = config.income
+    .filter(isRecurringIncome)
+    .map((entry) =>
+      createRow(entry.id, entry.name, 2, months, (month) =>
+        isRecurringActiveInMonth(entry, month) ? normalizeToMonthly(entry.amount, entry.recurrence) : 0
+      )
+    )
+
+  const recurringIncomeTotal = sumRows("income-recurring-total", "Subtotal Recurring", 1, recurringIncomeRows, {
+    isSubtotal: true,
+  })
+
+  const oneTimeIncomeRows: PLRow[] = config.income
+    .filter(isOneTimeIncome)
+    .map((entry) =>
+      createRow(entry.id, entry.name, 2, months, (month) => (entry.month === month ? entry.amount : 0))
+    )
+
+  const oneTimeIncomeTotal = sumRows("income-onetime-total", "Subtotal One-Time", 1, oneTimeIncomeRows, {
+    isSubtotal: true,
+  })
+
+  const totalIncomeRow = sumRows("income-total", "TOTAL INCOME", 0, [recurringIncomeTotal, oneTimeIncomeTotal])
+
+  // === EXPENSES ===
+  // Group recurring expenses by category
+  const recurringExpenses = config.expenses.filter(isRecurringExpense)
+  const oneTimeExpenses = config.expenses.filter(isOneTimeExpense)
+
+  const expensesByCategory = new Map<ExpenseCategory, RecurringExpense[]>()
+  recurringExpenses.forEach((expense) => {
+    const list = expensesByCategory.get(expense.category) || []
+    list.push(expense)
+    expensesByCategory.set(expense.category, list)
+  })
+
+  const recurringExpenseRows: PLRow[] = []
+
+  // Add category groups and their items
+  const categories = Object.keys(CATEGORY_LABELS) as ExpenseCategory[]
+  categories.forEach((category) => {
+    const categoryExpenses = expensesByCategory.get(category) || []
+    if (categoryExpenses.length === 0) return
+
+    // Add line items for this category
+    const itemRows = categoryExpenses.map((expense) =>
+      createRow(expense.id, expense.name, 2, months, (month) =>
+        isRecurringExpenseActiveInMonth(expense, month) ? expense.amount : 0
+      )
+    )
+
+    // Add category group row (collapsible)
+    const categoryTotal = sumRows(`expense-${category}`, CATEGORY_LABELS[category], 1, itemRows, { isSubtotal: false })
+    const categoryGroupRow: PLRow = {
+      ...categoryTotal,
+      isGroup: true,
+    }
+
+    recurringExpenseRows.push(categoryGroupRow)
+    recurringExpenseRows.push(...itemRows)
+  })
+
+  // Calculate recurring subtotal from category totals only
+  const categoryTotalRows = recurringExpenseRows.filter((row) => row.isGroup)
+  const recurringExpenseTotal = sumRows("expense-recurring-total", "Subtotal Recurring", 1, categoryTotalRows, {
+    isSubtotal: true,
+  })
+
+  // One-time expenses
+  const oneTimeExpenseRows: PLRow[] = oneTimeExpenses.map((expense) =>
+    createRow(expense.id, expense.name, 2, months, (month) => (expense.month === month ? expense.amount : 0))
+  )
+
+  const oneTimeExpenseTotal = sumRows("expense-onetime-total", "Subtotal One-Time", 1, oneTimeExpenseRows, {
+    isSubtotal: true,
+  })
+
+  const totalExpenseRow = sumRows("expense-total", "TOTAL EXPENSES", 0, [recurringExpenseTotal, oneTimeExpenseTotal])
+
+  // === NET CASH FLOW ===
+  const netCashFlowRow = createRow("net-cash-flow", "NET CASH FLOW", 0, months, (month) => {
+    return (totalIncomeRow.values[month] || 0) - (totalExpenseRow.values[month] || 0)
+  })
+
+  // === ALLOCATIONS ===
+  const investmentRows: PLRow[] = config.investments.map((inv) =>
+    createRow(inv.id, inv.name, 2, months, () => inv.monthlyContribution)
+  )
+  const investmentTotal = sumRows("allocation-investments-total", "Total Investments", 1, investmentRows, {
+    isSubtotal: true,
+  })
+
+  const savingsGoalRows: PLRow[] = config.savingsGoals
+    .filter((goal) => goal.monthlyContribution && goal.monthlyContribution > 0)
+    .map((goal) => createRow(goal.id, goal.name, 2, months, () => goal.monthlyContribution || 0))
+  const savingsGoalTotal = sumRows("allocation-goals-total", "Total Savings Goals", 1, savingsGoalRows, {
+    isSubtotal: true,
+  })
+
+  const totalAllocationRow = sumRows("allocation-total", "TOTAL ALLOCATED", 0, [investmentTotal, savingsGoalTotal])
+
+  // === UNALLOCATED ===
+  const unallocatedRow = createRow("unallocated", "UNALLOCATED SURPLUS", 0, months, (month) => {
+    return (netCashFlowRow.values[month] || 0) - (totalAllocationRow.values[month] || 0)
+  })
+
+  return {
+    year,
+    months,
+    income: {
+      recurring: {
+        title: "Recurring",
+        rows: recurringIncomeRows,
+        total: recurringIncomeTotal,
+      },
+      oneTime: {
+        title: "One-Time",
+        rows: oneTimeIncomeRows,
+        total: oneTimeIncomeTotal,
+      },
+      total: totalIncomeRow,
+    },
+    expenses: {
+      recurring: {
+        title: "Recurring",
+        rows: recurringExpenseRows,
+        total: recurringExpenseTotal,
+      },
+      oneTime: {
+        title: "One-Time",
+        rows: oneTimeExpenseRows,
+        total: oneTimeExpenseTotal,
+      },
+      total: totalExpenseRow,
+    },
+    netCashFlow: netCashFlowRow,
+    allocations: {
+      investments: {
+        title: "Investments",
+        rows: investmentRows,
+        total: investmentTotal,
+      },
+      savingsGoals: {
+        title: "Savings Goals",
+        rows: savingsGoalRows,
+        total: savingsGoalTotal,
+      },
+      total: totalAllocationRow,
+    },
+    unallocated: unallocatedRow,
+  }
+}
