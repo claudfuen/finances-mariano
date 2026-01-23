@@ -11,7 +11,7 @@ interface BudgetHeaderProps {
 
 export function BudgetHeader({ year, onPreviousYear, onNextYear }: BudgetHeaderProps) {
   return (
-    <header className="border-b border-border bg-card px-4 py-3">
+    <header className="sticky top-0 z-20 border-b border-border bg-card px-4 py-3">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">{year} Budget</h1>
         <div className="flex items-center gap-1">
