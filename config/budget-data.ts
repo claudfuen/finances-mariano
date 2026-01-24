@@ -202,12 +202,6 @@ export const budgetConfig: BudgetConfig = {
       amount: 25,
     },
     {
-      id: "exp-digitalocean",
-      name: "DigitalOcean",
-      category: "other",
-      amount: 37,
-    },
-    {
       id: "exp-adobe",
       name: "Adobe Creative Cloud",
       category: "other",
