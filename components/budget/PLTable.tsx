@@ -139,15 +139,15 @@ export function PLTable({ data }: PLTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-sm">
-        <thead className="sticky top-[52px] z-10 bg-background">
-          <tr className="border-b-2 border-border">
-            <th className="py-2 px-2 text-left text-xs font-semibold w-48 bg-background" />
+        <thead>
+          <tr className="border-b-2 border-border bg-background">
+            <th className="py-2 px-2 text-left text-xs font-semibold w-48" />
             {data.months.map((month) => (
-              <th key={month} className="py-2 px-2 text-right text-xs font-semibold w-20 bg-background">
+              <th key={month} className="py-2 px-2 text-right text-xs font-semibold w-20">
                 {formatMonthHeader(month)}
               </th>
             ))}
-            <th className="py-2 px-2 text-right text-xs font-semibold w-24 border-l border-border bg-background">
+            <th className="py-2 px-2 text-right text-xs font-semibold w-24 border-l border-border">
               YTD
             </th>
           </tr>

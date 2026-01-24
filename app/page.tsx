@@ -9,7 +9,7 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-background">
       <BudgetHeader year={plData.year} />
-      <main className="p-4">
+      <main>
         <PLTable data={plData} />
       </main>
     </div>
