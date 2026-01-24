@@ -240,12 +240,6 @@ export const budgetConfig: BudgetConfig = {
 
     // === SUBSCRIPTIONS (Work/Professional) ===
     {
-      id: "exp-linkedin",
-      name: "LinkedIn Premium",
-      category: "other",
-      amount: 45,
-    },
-    {
       id: "exp-medium",
       name: "Medium",
       category: "other",
