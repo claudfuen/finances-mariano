@@ -243,12 +243,6 @@ export const budgetConfig: BudgetConfig = {
       category: "other",
       amount: 22,
     },
-    {
-      id: "exp-leaplabs",
-      name: "Leap Labs AI",
-      category: "other",
-      amount: 49,
-    },
 
     // === SUBSCRIPTIONS (Work/Professional) ===
     {
