@@ -208,12 +208,6 @@ export const budgetConfig: BudgetConfig = {
       amount: 25,
     },
     {
-      id: "exp-vercel",
-      name: "Vercel",
-      category: "other",
-      amount: 20,
-    },
-    {
       id: "exp-digitalocean",
       name: "DigitalOcean",
       category: "other",
