@@ -252,12 +252,6 @@ export const budgetConfig: BudgetConfig = {
       amount: 45,
     },
     {
-      id: "exp-google-workspace",
-      name: "Google Workspace",
-      category: "other",
-      amount: 79,
-    },
-    {
       id: "exp-medium",
       name: "Medium",
       category: "other",
