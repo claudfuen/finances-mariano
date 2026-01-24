@@ -2,165 +2,333 @@ import type { BudgetConfig } from "@/types/budget"
 
 export const budgetConfig: BudgetConfig = {
   income: [
-    // Jan: NY income (lower due to state/city taxes)
+    // Bi-weekly: $6,928.92 = ~$15,013/month average (26 pay periods/year)
+    // Jan: NY income (lower take-home due to state taxes)
     {
       id: "inc-1a",
-      name: "Claudio Salary (NY)",
+      name: "Mariano Salary (NY)",
       source: "salary",
-      amount: 13760,
+      amount: 13858,
       month: "2026-01",
     },
-    {
-      id: "inc-2a",
-      name: "Katya Salary (NY)",
-      source: "salary",
-      amount: 8250,
-      month: "2026-01",
-    },
-    // Feb+: FL income (actual net from paystubs, no medical deduction)
+    // Feb+: FL income (bi-weekly $6,928.92 × 26 / 12 = $15,013)
     {
       id: "inc-1",
-      name: "Claudio Salary",
+      name: "Mariano Salary",
       source: "salary",
-      amount: 15190,
+      amount: 15013,
       recurrence: "monthly",
       startDate: "2026-02",
     },
+    // Family subsidy for parents expenses
     {
-      id: "inc-2",
-      name: "Katya Salary",
-      source: "salary",
-      amount: 9483,
+      id: "inc-subsidy",
+      name: "Family Subsidy (Parents)",
+      source: "other",
+      amount: 1800,
       recurrence: "monthly",
-      startDate: "2026-02",
     },
   ],
   expenses: [
     // === HOUSING ===
-    // Jan: NY rent
+    // Jan: NY rent (from statements)
     {
       id: "exp-housing-ny",
       name: "Rent (NY)",
       category: "housing",
-      amount: 6800,
+      amount: 7850,
       month: "2026-01",
     },
-    // Feb+: FL rent (incl. gym & parking)
+    // Feb+: FL rent
     {
       id: "exp-housing-fl",
-      name: "Rent (incl. gym & parking)",
+      name: "Rent",
       category: "housing",
-      amount: 3850,
+      amount: 5500,
       startDate: "2026-02",
-    },
-
-    // === TRANSPORTATION (2 Teslas) ===
-    {
-      id: "exp-tesla-claudio",
-      name: "Tesla Lease - Claudio",
-      category: "transportation",
-      amount: 441.04,
-    },
-    {
-      id: "exp-geico-claudio",
-      name: "Geico Insurance - Claudio",
-      category: "transportation",
-      amount: 288.79,
-    },
-    {
-      id: "exp-supercharging",
-      name: "Tesla Supercharging",
-      category: "transportation",
-      amount: 50,
-    },
-    {
-      id: "exp-tesla-connectivity",
-      name: "Tesla Premium Connectivity",
-      category: "transportation",
-      amount: 9.99,
     },
 
     // === UTILITIES ===
     {
-      id: "exp-electric",
-      name: "Electric",
+      id: "exp-electric-ny",
+      name: "Electric (NY)",
       category: "utilities",
-      amount: 120,
-      startDate: "2026-02", // FL only
+      amount: 325,
+      month: "2026-01",
     },
     {
-      id: "exp-internet",
-      name: "Internet",
+      id: "exp-electric-fl",
+      name: "Electric",
       category: "utilities",
-      amount: 70,
+      amount: 150,
+      startDate: "2026-02",
     },
     {
       id: "exp-phone",
-      name: "Phone Plans (2 lines)",
+      name: "Verizon Wireless",
       category: "utilities",
-      amount: 120,
-    },
-
-    // === FOOD ===
-    {
-      id: "exp-ubereats",
-      name: "Uber Eats",
-      category: "food",
-      amount: 1200,
-    },
-    {
-      id: "exp-dining",
-      name: "Restaurants & Dining",
-      category: "food",
       amount: 150,
     },
-    {
-      id: "exp-coffee",
-      name: "Coffee",
-      category: "food",
-      amount: 50,
-    },
-    {
-      id: "exp-groceries",
-      name: "Groceries (Whole Foods/Amazon Fresh)",
-      category: "food",
-      amount: 400,
-    },
 
-    // === SUBSCRIPTIONS (Entertainment) ===
+    // === INSURANCE ===
     {
-      id: "exp-spotify",
-      name: "Spotify",
-      category: "entertainment",
-      amount: 19.99,
+      id: "exp-lemonade",
+      name: "Lemonade (Renters)",
+      category: "other",
+      amount: 31,
     },
     {
-      id: "exp-prime",
-      name: "Amazon Prime",
-      category: "entertainment",
-      amount: 16.32,
-    },
-    {
-      id: "exp-uberone",
-      name: "Uber One",
-      category: "entertainment",
-      amount: 9.99,
-    },
-
-    // === SUBSCRIPTIONS (Work/Productivity) ===
-    {
-      id: "exp-cursor",
-      name: "Cursor AI",
+      id: "exp-msi",
+      name: "MSI Insurance",
       category: "other",
       amount: 22,
     },
 
-    // === SUBSCRIPTIONS (Personal) ===
+    // === TRANSPORTATION ===
+    {
+      id: "exp-transit-ny",
+      name: "MTA Transit",
+      category: "transportation",
+      amount: 30,
+      month: "2026-01",
+    },
+    {
+      id: "exp-uber",
+      name: "Uber",
+      category: "transportation",
+      amount: 75,
+    },
+
+    // === FOOD ===
+    {
+      id: "exp-groceries",
+      name: "Groceries",
+      category: "food",
+      amount: 100,
+    },
+    {
+      id: "exp-dining",
+      name: "Dining & Entertainment",
+      category: "food",
+      amount: 200,
+    },
+    {
+      id: "exp-amazon-grocery",
+      name: "Amazon Grocery Subscription",
+      category: "food",
+      amount: 11,
+    },
+
+    // === SUBSCRIPTIONS (Streaming) ===
+    {
+      id: "exp-netflix",
+      name: "Netflix",
+      category: "entertainment",
+      amount: 25,
+    },
+    {
+      id: "exp-hbomax",
+      name: "HBO Max",
+      category: "entertainment",
+      amount: 18,
+    },
+    {
+      id: "exp-audible",
+      name: "Audible",
+      category: "entertainment",
+      amount: 15,
+    },
+    {
+      id: "exp-discord",
+      name: "Discord Nitro",
+      category: "entertainment",
+      amount: 10,
+    },
+
+    // === SUBSCRIPTIONS (Gaming) ===
+    {
+      id: "exp-playstation",
+      name: "PlayStation Network",
+      category: "entertainment",
+      amount: 21,
+    },
+    {
+      id: "exp-steam",
+      name: "Steam Games",
+      category: "entertainment",
+      amount: 75,
+    },
+    {
+      id: "exp-apex-hosting",
+      name: "Apex Minecraft Hosting",
+      category: "entertainment",
+      amount: 72,
+    },
+    {
+      id: "exp-faceit",
+      name: "Faceit",
+      category: "entertainment",
+      amount: 7,
+    },
+    {
+      id: "exp-ea",
+      name: "EA Origin",
+      category: "entertainment",
+      amount: 6,
+    },
+    {
+      id: "exp-raidbots",
+      name: "Raidbots",
+      category: "entertainment",
+      amount: 10,
+    },
+
+    // === SUBSCRIPTIONS (Dev Tools) ===
+    {
+      id: "exp-chatgpt",
+      name: "ChatGPT Plus",
+      category: "other",
+      amount: 20,
+    },
+    {
+      id: "exp-cursor",
+      name: "Cursor AI",
+      category: "other",
+      amount: 20,
+    },
+    {
+      id: "exp-github",
+      name: "GitHub",
+      category: "other",
+      amount: 4,
+    },
+    {
+      id: "exp-supabase",
+      name: "Supabase",
+      category: "other",
+      amount: 25,
+    },
+    {
+      id: "exp-vercel",
+      name: "Vercel",
+      category: "other",
+      amount: 20,
+    },
+    {
+      id: "exp-digitalocean",
+      name: "DigitalOcean",
+      category: "other",
+      amount: 37,
+    },
+    {
+      id: "exp-adobe",
+      name: "Adobe Creative Cloud",
+      category: "other",
+      amount: 34,
+    },
+    {
+      id: "exp-excalidraw",
+      name: "Excalidraw Plus",
+      category: "other",
+      amount: 7,
+    },
+    {
+      id: "exp-playcode",
+      name: "Playcode",
+      category: "other",
+      amount: 15,
+    },
+    {
+      id: "exp-nvidia",
+      name: "Nvidia",
+      category: "other",
+      amount: 22,
+    },
+    {
+      id: "exp-leaplabs",
+      name: "Leap Labs AI",
+      category: "other",
+      amount: 49,
+    },
+
+    // === SUBSCRIPTIONS (Work/Professional) ===
+    {
+      id: "exp-linkedin",
+      name: "LinkedIn Premium",
+      category: "other",
+      amount: 45,
+    },
+    {
+      id: "exp-google-workspace",
+      name: "Google Workspace",
+      category: "other",
+      amount: 79,
+    },
+    {
+      id: "exp-medium",
+      name: "Medium",
+      category: "other",
+      amount: 5,
+    },
+    {
+      id: "exp-legalzoom",
+      name: "LegalZoom",
+      category: "other",
+      amount: 40,
+    },
+
+    // === SUBSCRIPTIONS (Apple Services) ===
+    {
+      id: "exp-apple",
+      name: "Apple Services",
+      category: "other",
+      amount: 150,
+    },
+
+    // === SUBSCRIPTIONS (Health) ===
+    {
+      id: "exp-hims",
+      name: "Hims / Ro Health",
+      category: "personal",
+      amount: 160,
+    },
     {
       id: "exp-oura",
       name: "Oura Ring",
       category: "personal",
-      amount: 6.52,
+      amount: 7,
+    },
+
+    // === SUBSCRIPTIONS (Other) ===
+    {
+      id: "exp-uberone",
+      name: "Uber One",
+      category: "other",
+      amount: 10,
+    },
+    {
+      id: "exp-chess",
+      name: "Chess.com",
+      category: "entertainment",
+      amount: 19,
+    },
+    {
+      id: "exp-hinge",
+      name: "Hinge",
+      category: "personal",
+      amount: 30,
+    },
+    {
+      id: "exp-rocketmoney",
+      name: "Rocket Money",
+      category: "other",
+      amount: 4,
+    },
+    {
+      id: "exp-stash",
+      name: "Stash",
+      category: "other",
+      amount: 3,
     },
 
     // === DEBT ===
@@ -168,21 +336,98 @@ export const budgetConfig: BudgetConfig = {
       id: "exp-student-loans",
       name: "Student Loans (Federal)",
       category: "other",
+      amount: 186,
+    },
+    {
+      id: "exp-irs",
+      name: "IRS Tax Payment",
+      category: "other",
+      amount: 251,
+    },
+
+    // === PARENTS CAR ===
+    {
+      id: "exp-parents-car",
+      name: "Parents Car Payment (Sonata)",
+      category: "transportation",
+      amount: 350,
+    },
+    {
+      id: "exp-parents-car-insurance",
+      name: "Parents Car Insurance",
+      category: "transportation",
+      amount: 175,
+    },
+    // NY only - free parking in Miami
+    {
+      id: "exp-parking-ny",
+      name: "Parking (2 spots @ $350)",
+      category: "transportation",
+      amount: 700,
+      month: "2026-01",
+    },
+
+    // === PARENTS HOUSEHOLD (Apple Card) ===
+    // Parents (Hector & Angie) use the shared Apple Card for groceries & household
+    {
+      id: "exp-parents-groceries",
+      name: "Parents Groceries (Costco, Key Food)",
+      category: "food",
+      amount: 1400,
+    },
+    {
+      id: "exp-parents-ubereats",
+      name: "Parents Uber Eats",
+      category: "food",
+      amount: 150,
+    },
+    {
+      id: "exp-parents-pharmacy",
+      name: "Parents Pharmacy (CVS)",
+      category: "personal",
+      amount: 75,
+    },
+    {
+      id: "exp-parents-transit",
+      name: "Parents Transit (MTA)",
+      category: "transportation",
+      amount: 50,
+    },
+    {
+      id: "exp-parents-misc",
+      name: "Parents Misc (coffee, Amazon)",
+      category: "other",
       amount: 200,
+    },
+
+    // === APPLE INSTALLMENTS ===
+    {
+      id: "exp-apple-installments",
+      name: "Apple Card Installments",
+      category: "other",
+      amount: 58,
+    },
+
+    // === OTHER CREDIT CARDS ===
+    {
+      id: "exp-synchrony",
+      name: "Synchrony Bank Payment",
+      category: "other",
+      amount: 110,
+    },
+    {
+      id: "exp-tdbank",
+      name: "TD Bank Payment",
+      category: "other",
+      amount: 133,
     },
   ],
   investments: [
-    {
-      id: "inv-robinhood",
-      name: "Robinhood",
-      balance: 101000,
-      monthlyContribution: 0, // Dynamic - all surplus after cash buffer
-      expectedReturn: 0.07, // 7% annual market average
-    },
+    // TODO: Add Mariano's investment accounts if any
   ],
   cashReserve: {
-    target: 20000,
-    current: 0, // Starting empty as of Jan 2026
+    target: 10000,
+    current: 6200, // From Jan 2026 statement ending balance
   },
   savingsGoals: [
     // TODO: Define savings goals
