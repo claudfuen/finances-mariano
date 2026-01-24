@@ -30,21 +30,15 @@ export const budgetConfig: BudgetConfig = {
   ],
   expenses: [
     // === HOUSING ===
-    // Jan: NY rent (from statements)
+    // Rent: NY in Jan ($7,850), FL from Feb ($5,500)
     {
-      id: "exp-housing-ny",
-      name: "Rent (NY)",
-      category: "housing",
-      amount: 7850,
-      month: "2026-01",
-    },
-    // Feb+: FL rent
-    {
-      id: "exp-housing-fl",
+      id: "exp-rent",
       name: "Rent",
       category: "housing",
       amount: 5500,
-      startDate: "2026-02",
+      monthlyOverrides: {
+        "2026-01": 7850, // NY rent before FL move
+      },
     },
 
     // === UTILITIES ===

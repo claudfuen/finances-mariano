@@ -151,9 +151,11 @@ export function generatePLData(config: BudgetConfig): PLData {
 
     // Add line items for this category
     const itemRows = categoryExpenses.map((expense) =>
-      createRow(expense.id, expense.name, 2, months, (month) =>
-        isRecurringExpenseActiveInMonth(expense, month) ? expense.amount : 0
-      )
+      createRow(expense.id, expense.name, 2, months, (month) => {
+        if (!isRecurringExpenseActiveInMonth(expense, month)) return 0
+        // Use monthly override if available, otherwise default amount
+        return expense.monthlyOverrides?.[month] ?? expense.amount
+      })
     )
 
     // Add category group row (collapsible)

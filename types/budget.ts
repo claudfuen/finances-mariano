@@ -50,6 +50,7 @@ export interface RecurringExpense {
   amount: number
   startDate?: string // YYYY-MM format
   endDate?: string // YYYY-MM format
+  monthlyOverrides?: Record<string, number> // YYYY-MM -> amount overrides
 }
 
 export interface OneTimeExpense {
