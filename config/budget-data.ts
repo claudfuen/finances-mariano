@@ -11,12 +11,12 @@ export const budgetConfig: BudgetConfig = {
       amount: 13858,
       month: "2026-01",
     },
-    // Feb+: FL income (bi-weekly $6,928.92 × 26 / 12 = $15,013)
+    // Feb+: FL income (bi-weekly $6,928.92 × 2 = $13,857.84)
     {
       id: "inc-1",
       name: "Mariano Salary",
       source: "salary",
-      amount: 15013,
+      amount: 13858,
       recurrence: "monthly",
       startDate: "2026-02",
     },
