@@ -2,13 +2,12 @@ import type { BudgetConfig } from "@/types/budget"
 
 export const budgetConfig: BudgetConfig = {
   income: [
-    // Bi-weekly: $6,928.92 = ~$15,013/month average (26 pay periods/year)
-    // Jan: NY income (lower take-home due to state taxes)
+    // Jan: NY income (10% less due to state taxes: $13,858 × 0.90 = $12,472)
     {
       id: "inc-1a",
       name: "Mariano Salary (NY)",
       source: "salary",
-      amount: 13858,
+      amount: 12472,
       month: "2026-01",
     },
     // Feb+: FL income (bi-weekly $6,928.92 × 2 = $13,857.84)
