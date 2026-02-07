@@ -249,6 +249,13 @@ export interface InsightsData {
     projectedYearEndCash: number
     projectedYearEndNetWorth: number
   }
+
+  debtFreeProjection: {
+    totalMonthlyDebt: number
+    debtSavings: number
+    debtFreeYearEndCash: number
+    items: Array<{ name: string; monthlyAmount: number }>
+  }
 }
 
 // UI State

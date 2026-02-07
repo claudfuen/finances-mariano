@@ -26,14 +26,15 @@ const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
 
 const CREDIT_CARD_KEYWORDS = ["Capital One", "Marriott", "Visa Prime", "American Express"]
 const HOUSEHOLD_KEYWORDS = ["Groceries", "Uber Eats", "Pharmacy", "Transit", "Misc"]
+const DEBT_NAME_KEYWORDS = ["Loan", "IRS Tax", "Installment", "Synchrony", "TD Bank"]
 
 /**
- * Compute financial insights from budget config
+ * Compute financial insights from budget config for a specific month
  */
-export function computeInsights(config: BudgetConfig): InsightsData {
+export function computeInsights(config: BudgetConfig, month?: string): InsightsData {
   const { year } = config.settings
   const currentMonth = getCurrentMonth()
-  const referenceMonth = currentMonth.startsWith(`${year}`) ? currentMonth : `${year}-02`
+  const referenceMonth = month ?? (currentMonth.startsWith(`${year}`) ? currentMonth : `${year}-02`)
 
   // Monthly summary
   const totalIncome = calculateMonthlyIncome(config.income, referenceMonth)
@@ -104,9 +105,36 @@ export function computeInsights(config: BudgetConfig): InsightsData {
   const totalYearNet = totalYearIncome - totalYearExpenses
   const avgSavingsRate = totalYearIncome > 0 ? totalYearNet / totalYearIncome : 0
 
-  const projectedYearEndCash = cashCurrent + Math.min(cashGap, Math.max(0, totalYearNet))
+  const projectedYearEndCash = cashCurrent + totalYearNet
   const investmentBalance = config.investments.reduce((sum, inv) => sum + inv.balance, 0)
   const projectedYearEndNetWorth = projectedYearEndCash + investmentBalance
+
+  // Debt-free projection: what if all debt payments vanished from this month onward?
+  const debtExpenses = config.expenses.filter((e) => {
+    if (!isRecurringExpense(e)) return false
+    if (e.name.includes("Car Payment") || e.name.includes("Car Insurance")) return false
+    if (e.endDate) return true
+    return DEBT_NAME_KEYWORDS.some((k) => e.name.includes(k))
+  })
+
+  const remainingMonths = months.filter((m) => m >= referenceMonth)
+  let debtSavings = 0
+  const debtItems: Array<{ name: string; monthlyAmount: number }> = []
+
+  debtExpenses.forEach((expense) => {
+    const monthlyAmount = getExpenseAmountForMonth(expense, referenceMonth)
+    if (monthlyAmount === 0) return
+
+    let saved = 0
+    remainingMonths.forEach((m) => {
+      saved += getExpenseAmountForMonth(expense, m)
+    })
+    debtSavings += saved
+    debtItems.push({ name: expense.name, monthlyAmount })
+  })
+
+  const debtFreeYearEndCash = projectedYearEndCash + debtSavings
+  const totalMonthlyDebt = debtItems.reduce((sum, d) => sum + d.monthlyAmount, 0)
 
   return {
     year,
@@ -137,5 +165,26 @@ export function computeInsights(config: BudgetConfig): InsightsData {
       projectedYearEndCash,
       projectedYearEndNetWorth,
     },
+    debtFreeProjection: {
+      totalMonthlyDebt,
+      debtSavings,
+      debtFreeYearEndCash,
+      items: debtItems,
+    },
   }
+}
+
+/**
+ * Pre-compute insights for all 12 months of the budget year
+ */
+export function computeAllMonthlyInsights(config: BudgetConfig): Record<string, InsightsData> {
+  const { year } = config.settings
+  const result: Record<string, InsightsData> = {}
+
+  for (let m = 1; m <= 12; m++) {
+    const month = `${year}-${String(m).padStart(2, "0")}`
+    result[month] = computeInsights(config, month)
+  }
+
+  return result
 }

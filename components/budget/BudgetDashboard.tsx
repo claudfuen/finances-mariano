@@ -8,10 +8,11 @@ import { InsightsPanel } from "./InsightsPanel"
 
 interface BudgetDashboardProps {
   plData: PLData
-  insightsData: InsightsData
+  allInsights: Record<string, InsightsData>
+  defaultMonth: string
 }
 
-export function BudgetDashboard({ plData, insightsData }: BudgetDashboardProps) {
+export function BudgetDashboard({ plData, allInsights, defaultMonth }: BudgetDashboardProps) {
   const [activeView, setActiveView] = useState<"pl" | "insights">("pl")
 
   return (
@@ -25,7 +26,11 @@ export function BudgetDashboard({ plData, insightsData }: BudgetDashboardProps) 
         {activeView === "pl" ? (
           <PLTable data={plData} />
         ) : (
-          <InsightsPanel data={insightsData} />
+          <InsightsPanel
+            allInsights={allInsights}
+            months={plData.months}
+            defaultMonth={defaultMonth}
+          />
         )}
       </main>
     </>

@@ -1,14 +1,18 @@
 "use client"
 
+import { useState } from "react"
 import type { InsightsData } from "@/types/budget"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { formatCurrency, formatPercentage } from "@/lib/calculations"
 
 interface InsightsPanelProps {
-  data: InsightsData
+  allInsights: Record<string, InsightsData>
+  months: string[]
+  defaultMonth: string
 }
 
 const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -299,6 +303,64 @@ function YearlyProjectionCard({ data }: { data: InsightsData }) {
   )
 }
 
+function DebtFreeProjectionCard({ data }: { data: InsightsData }) {
+  const { debtFreeProjection, yearlyProjection } = data
+  const difference = debtFreeProjection.debtFreeYearEndCash - yearlyProjection.projectedYearEndCash
+
+  if (debtFreeProjection.items.length === 0) return null
+
+  return (
+    <Card className="sm:col-span-2">
+      <CardHeader>
+        <CardTitle>What If: Debt Free from {formatMonth(data.currentMonth)}</CardTitle>
+        <CardDescription>
+          If all debt & installment payments disappeared starting this month
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Current monthly debt</span>
+              <span className="font-mono tabular-nums font-medium text-destructive">
+                {formatCurrency(debtFreeProjection.totalMonthlyDebt)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Saved through Dec</span>
+              <span className="font-mono tabular-nums font-medium text-positive">
+                +{formatCurrency(difference)}
+              </span>
+            </div>
+            <Separator />
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Current year-end projection</span>
+              <span className="font-mono tabular-nums font-medium">
+                {formatCurrency(yearlyProjection.projectedYearEndCash)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-medium">Debt-free year-end projection</span>
+              <span className="font-mono tabular-nums font-semibold text-positive">
+                {formatCurrency(debtFreeProjection.debtFreeYearEndCash)}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium mb-1">Payments that would stop</span>
+            {debtFreeProjection.items.map((item) => (
+              <div key={item.name} className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{item.name}</span>
+                <span className="font-mono tabular-nums">{formatCurrency(item.monthlyAmount)}/mo</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 function MonthlyTrendCard({ data }: { data: InsightsData }) {
   return (
     <Card className="sm:col-span-2">
@@ -357,15 +419,40 @@ function MonthlyTrendCard({ data }: { data: InsightsData }) {
   )
 }
 
-export function InsightsPanel({ data }: InsightsPanelProps) {
+function MonthSelector({ months, selected, onSelect }: { months: string[]; selected: string; onSelect: (m: string) => void }) {
   return (
-    <div className="p-4 grid gap-4 sm:grid-cols-2">
-      <MonthlySummaryCard data={data} />
-      <TopExpensesCard data={data} />
-      <FamilyBurdenCard data={data} />
-      <CashReserveCard data={data} />
-      <YearlyProjectionCard data={data} />
-      <MonthlyTrendCard data={data} />
+    <div className="flex items-center gap-1 overflow-x-auto pb-1">
+      {months.map((month) => (
+        <Button
+          key={month}
+          variant={month === selected ? "secondary" : "ghost"}
+          size="sm"
+          onClick={() => onSelect(month)}
+          className={cn("shrink-0", month !== selected && "text-muted-foreground")}
+        >
+          {formatMonth(month)}
+        </Button>
+      ))}
+    </div>
+  )
+}
+
+export function InsightsPanel({ allInsights, months, defaultMonth }: InsightsPanelProps) {
+  const [selectedMonth, setSelectedMonth] = useState(defaultMonth)
+  const data = allInsights[selectedMonth]
+
+  return (
+    <div className="p-4 flex flex-col gap-4">
+      <MonthSelector months={months} selected={selectedMonth} onSelect={setSelectedMonth} />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <MonthlySummaryCard data={data} />
+        <TopExpensesCard data={data} />
+        <FamilyBurdenCard data={data} />
+        <CashReserveCard data={data} />
+        <YearlyProjectionCard data={data} />
+        <DebtFreeProjectionCard data={data} />
+        <MonthlyTrendCard data={data} />
+      </div>
     </div>
   )
 }
