@@ -29,9 +29,21 @@ interface RowProps {
   isHidden?: boolean
   onToggle?: () => void
   variant?: "header" | "section" | "group" | "item" | "subtotal" | "total" | "grand-total"
+  colorMode?: "default" | "semantic" | "expense"
 }
 
-function TableRow({ row, months, isCollapsed, isHidden, onToggle, variant = "item" }: RowProps) {
+function getValueColor(value: number, colorMode: "default" | "semantic" | "expense"): string {
+  if (value === 0) return ""
+  if (colorMode === "semantic") {
+    return value > 0 ? "text-positive" : "text-destructive"
+  }
+  if (colorMode === "expense") {
+    return "text-destructive"
+  }
+  return value < 0 ? "text-destructive" : ""
+}
+
+function TableRow({ row, months, isCollapsed, isHidden, onToggle, variant = "item", colorMode = "default" }: RowProps) {
   if (isHidden) return null
 
   const isClickable = row.isGroup && onToggle
@@ -75,7 +87,7 @@ function TableRow({ row, months, isCollapsed, isHidden, onToggle, variant = "ite
           key={month}
           className={cn(
             "py-1 px-2 text-xs text-right font-mono tabular-nums",
-            row.values[month] < 0 && "text-destructive"
+            getValueColor(row.values[month], colorMode)
           )}
         >
           {formatValue(row.values[month])}
@@ -84,7 +96,7 @@ function TableRow({ row, months, isCollapsed, isHidden, onToggle, variant = "ite
       <td
         className={cn(
           "py-1 px-2 text-xs text-right font-mono tabular-nums font-medium border-l border-border",
-          row.ytd < 0 && "text-destructive"
+          getValueColor(row.ytd, colorMode)
         )}
       >
         {formatValue(row.ytd, true)}
@@ -182,7 +194,7 @@ export function PLTable({ data }: PLTableProps) {
             </>
           )}
 
-          <TableRow row={data.income.total} months={data.months} variant="total" />
+          <TableRow row={data.income.total} months={data.months} variant="total" colorMode="semantic" />
 
           <Separator />
 
@@ -223,12 +235,15 @@ export function PLTable({ data }: PLTableProps) {
             </>
           )}
 
-          <TableRow row={data.expenses.total} months={data.months} variant="total" />
+          <TableRow row={data.expenses.total} months={data.months} variant="total" colorMode="expense" />
 
           <Separator />
 
-          {/* NET CASH FLOW */}
-          <TableRow row={data.netCashFlow} months={data.months} variant="grand-total" />
+          {/* SUMMARY: Income - Expenses = Net Cash Flow */}
+          <SectionHeader title="Summary" />
+          <TableRow row={data.income.total} months={data.months} variant="total" colorMode="semantic" />
+          <TableRow row={data.expenses.total} months={data.months} variant="total" colorMode="expense" />
+          <TableRow row={data.netCashFlow} months={data.months} variant="grand-total" colorMode="semantic" />
 
           {/* Only show allocations if there are fixed monthly contributions */}
           {data.allocations.total.ytd > 0 && (
@@ -265,20 +280,14 @@ export function PLTable({ data }: PLTableProps) {
               <Separator />
 
               {/* UNALLOCATED */}
-              <TableRow row={data.unallocated} months={data.months} variant="grand-total" />
+              <TableRow row={data.unallocated} months={data.months} variant="grand-total" colorMode="semantic" />
             </>
           )}
 
-          {/* BALANCES */}
-          {data.balances && (
-            <>
-              <Separator />
-              <SectionHeader title="Balances" />
-              <TableRow row={data.balances.cash} months={data.months} variant="item" />
-              <TableRow row={data.balances.investments} months={data.months} variant="item" />
-              <TableRow row={data.balances.netWorth} months={data.months} variant="grand-total" />
-            </>
-          )}
+          <Separator />
+
+          {/* BANK BALANCE */}
+          <TableRow row={data.bankBalance} months={data.months} variant="grand-total" colorMode="semantic" />
         </tbody>
       </table>
     </div>

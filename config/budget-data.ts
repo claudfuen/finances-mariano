@@ -10,19 +10,19 @@ export const budgetConfig: BudgetConfig = {
       amount: 12472,
       month: "2026-01",
     },
-    // Feb+: FL income (bi-weekly $6,928.92 × 2 = $13,857.84)
+    // Feb+: FL income (bi-weekly $6,928.92 net after taxes)
     {
       id: "inc-1",
       name: "Mariano Salary",
       source: "salary",
-      amount: 13858,
-      recurrence: "monthly",
+      amount: 6929,
+      recurrence: "biweekly",
       startDate: "2026-02",
     },
-    // Family subsidy for parents expenses
+    // Claudio contribution
     {
-      id: "inc-subsidy",
-      name: "Family Subsidy (Parents)",
+      id: "inc-claudio",
+      name: "Claudio",
       source: "other",
       amount: 1800,
       recurrence: "monthly",
@@ -35,10 +35,33 @@ export const budgetConfig: BudgetConfig = {
       id: "exp-rent",
       name: "Rent",
       category: "housing",
-      amount: 5500,
+      amount: 5600,
       monthlyOverrides: {
         "2026-01": 7850, // NY rent before FL move
       },
+    },
+
+    // === MOVING COSTS (Feb 2026) ===
+    {
+      id: "exp-move-extra-rent",
+      name: "Extra Month Rent (first & last)",
+      category: "housing",
+      amount: 11200,
+      month: "2026-02",
+    },
+    {
+      id: "exp-move-nyc-prorated",
+      name: "Pro-rated NYC Rent",
+      category: "housing",
+      amount: 4152,
+      month: "2026-02",
+    },
+    {
+      id: "exp-move-movers",
+      name: "Movers",
+      category: "housing",
+      amount: 3000,
+      month: "2026-02",
     },
 
     // === UTILITIES ===
@@ -308,19 +331,6 @@ export const budgetConfig: BudgetConfig = {
       amount: 251,
     },
 
-    // === PARENTS CAR ===
-    {
-      id: "exp-parents-car",
-      name: "Parents Car Payment (Sonata)",
-      category: "transportation",
-      amount: 350,
-    },
-    {
-      id: "exp-parents-car-insurance",
-      name: "Parents Car Insurance",
-      category: "transportation",
-      amount: 175,
-    },
     // NY only - free parking in Miami
     {
       id: "exp-parking-ny",
@@ -330,36 +340,87 @@ export const budgetConfig: BudgetConfig = {
       month: "2026-01",
     },
 
-    // === PARENTS HOUSEHOLD (Apple Card) ===
-    // Parents (Hector & Angie) use the shared Apple Card for groceries & household
+    // === FAMILY (HECTOR) ===
+    {
+      id: "exp-hector-car",
+      name: "Hector Car Payment",
+      category: "family",
+      amount: 320,
+      endDate: "2027-08", // 19 payments left from Feb 2026
+    },
+    {
+      id: "exp-hector-car-insurance",
+      name: "Hector Car Insurance",
+      category: "family",
+      amount: 160,
+    },
+    {
+      id: "exp-hector-phones",
+      name: "Hector & Angie Phones",
+      category: "family",
+      amount: 95,
+    },
+    {
+      id: "exp-hector-capital-one",
+      name: "Hector Capital One QuickSilver",
+      category: "family",
+      amount: 136,
+      startDate: "2026-02",
+      endDate: "2028-07", // $4,020 remaining
+    },
+    {
+      id: "exp-hector-marriott-chase",
+      name: "Hector Marriott Bonvoy Chase",
+      category: "family",
+      amount: 124,
+      startDate: "2026-02",
+      endDate: "2028-11", // $4,121 remaining
+    },
+    {
+      id: "exp-hector-visa-chase",
+      name: "Hector Visa Prime Chase",
+      category: "family",
+      amount: 261,
+      startDate: "2026-02",
+      endDate: "2028-11", // $8,793 remaining
+    },
+    {
+      id: "exp-hector-amex",
+      name: "Hector American Express",
+      category: "family",
+      amount: 127,
+      startDate: "2026-02",
+      endDate: "2028-11", // $4,209 remaining
+    },
+    // Parents household expenses (Apple Card)
     {
       id: "exp-parents-groceries",
       name: "Parents Groceries (Costco, Key Food)",
-      category: "food",
+      category: "family",
       amount: 1400,
     },
     {
       id: "exp-parents-ubereats",
       name: "Parents Uber Eats",
-      category: "food",
+      category: "family",
       amount: 150,
     },
     {
       id: "exp-parents-pharmacy",
       name: "Parents Pharmacy (CVS)",
-      category: "personal",
+      category: "family",
       amount: 75,
     },
     {
       id: "exp-parents-transit",
       name: "Parents Transit (MTA)",
-      category: "transportation",
+      category: "family",
       amount: 50,
     },
     {
       id: "exp-parents-misc",
       name: "Parents Misc (coffee, Amazon)",
-      category: "other",
+      category: "family",
       amount: 200,
     },
 
@@ -390,7 +451,7 @@ export const budgetConfig: BudgetConfig = {
   ],
   cashReserve: {
     target: 10000,
-    current: 6200, // From Jan 2026 statement ending balance
+    current: 24755, // Chase ($19,537) + new bank ($5,218)
   },
   savingsGoals: [
     // TODO: Define savings goals

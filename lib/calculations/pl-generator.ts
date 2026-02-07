@@ -19,6 +19,7 @@ const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
   entertainment: "Entertainment",
   personal: "Personal",
   debt: "Debt",
+  family: "Family (Hector)",
   other: "Other",
 }
 
@@ -230,69 +231,24 @@ export function generatePLData(config: BudgetConfig): PLData {
     return (netCashFlowRow.values[month] || 0) - (totalAllocationRow.values[month] || 0)
   })
 
-  // === ACCRUING BALANCES ===
-  const cashReserveTarget = config.cashReserve?.target || 0
+  // === BANK BALANCE ===
   const startingCash = config.cashReserve?.current || 0
-  const startingInvestments = config.investments.reduce((sum, inv) => sum + inv.balance, 0)
-  const monthlyReturn = config.investments.length > 0
-    ? config.investments.reduce((sum, inv) => sum + inv.expectedReturn, 0) / config.investments.length / 12
-    : 0
-
-  // Track running balances
-  let runningCash = startingCash
-  let runningInvestments = startingInvestments
-
-  const cashValues: Record<string, number> = {}
-  const investmentValues: Record<string, number> = {}
-  const netWorthValues: Record<string, number> = {}
+  let runningBalance = startingCash
+  const balanceValues: Record<string, number> = {}
 
   months.forEach((month) => {
-    const monthlyNetCashFlow = netCashFlowRow.values[month] || 0
-
-    // First, top up cash to target if below
-    const cashNeeded = Math.max(0, cashReserveTarget - runningCash)
-    const cashContribution = Math.min(cashNeeded, Math.max(0, monthlyNetCashFlow))
-    runningCash += cashContribution
-
-    // Rest goes to investments
-    const investmentContribution = Math.max(0, monthlyNetCashFlow - cashContribution)
-
-    // Apply investment returns then add contribution
-    runningInvestments = runningInvestments * (1 + monthlyReturn) + investmentContribution
-
-    cashValues[month] = Math.round(runningCash)
-    investmentValues[month] = Math.round(runningInvestments)
-    netWorthValues[month] = Math.round(runningCash + runningInvestments)
+    runningBalance += netCashFlowRow.values[month] || 0
+    balanceValues[month] = Math.round(runningBalance)
   })
 
-  const cashRow: PLRow = {
-    id: "balance-cash",
-    name: "Cash Reserve",
-    isGroup: false,
-    isSubtotal: false,
-    depth: 1,
-    values: cashValues,
-    ytd: cashValues[months[months.length - 1]] || 0,
-  }
-
-  const investmentsBalanceRow: PLRow = {
-    id: "balance-investments",
-    name: "Investments",
-    isGroup: false,
-    isSubtotal: false,
-    depth: 1,
-    values: investmentValues,
-    ytd: investmentValues[months[months.length - 1]] || 0,
-  }
-
-  const netWorthRow: PLRow = {
-    id: "balance-net-worth",
-    name: "NET WORTH",
+  const bankBalanceRow: PLRow = {
+    id: "bank-balance",
+    name: "BANK BALANCE",
     isGroup: false,
     isSubtotal: false,
     depth: 0,
-    values: netWorthValues,
-    ytd: netWorthValues[months[months.length - 1]] || 0,
+    values: balanceValues,
+    ytd: balanceValues[months[months.length - 1]] || 0,
   }
 
   return {
@@ -339,10 +295,6 @@ export function generatePLData(config: BudgetConfig): PLData {
       total: totalAllocationRow,
     },
     unallocated: unallocatedRow,
-    balances: {
-      cash: cashRow,
-      investments: investmentsBalanceRow,
-      netWorth: netWorthRow,
-    },
+    bankBalance: bankBalanceRow,
   }
 }

@@ -25,6 +25,9 @@ export function isExpenseActiveInMonth(entry: ExpenseEntry, month: string): bool
  */
 export function getExpenseAmountForMonth(entry: ExpenseEntry, month: string): number {
   if (!isExpenseActiveInMonth(entry, month)) return 0
+  if (isRecurringExpense(entry)) {
+    return entry.monthlyOverrides?.[month] ?? entry.amount
+  }
   return entry.amount
 }
 
@@ -86,6 +89,7 @@ export function groupExpensesByCategory(
     entertainment: 0,
     personal: 0,
     debt: 0,
+    family: 0,
     other: 0,
   }
 
@@ -114,6 +118,7 @@ export function groupRecurringExpensesByCategory(
     entertainment: [],
     personal: [],
     debt: [],
+    family: [],
     other: [],
   }
 

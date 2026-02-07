@@ -41,6 +41,7 @@ export type ExpenseCategory =
   | "entertainment"
   | "personal"
   | "debt"
+  | "family"
   | "other"
 
 export interface RecurringExpense {
@@ -149,11 +150,7 @@ export interface PLData {
     total: PLRow
   }
   unallocated: PLRow
-  balances?: {
-    cash: PLRow
-    investments: PLRow
-    netWorth: PLRow
-  }
+  bankBalance: PLRow
 }
 
 // Computed types
@@ -198,6 +195,60 @@ export interface PortfolioSummary {
   projectedOneYear: number
   projectedFiveYear: number
   projectedTenYear: number
+}
+
+// Insights types
+export interface InsightsData {
+  year: number
+  currentMonth: string
+
+  monthlySummary: {
+    totalIncome: number
+    totalExpenses: number
+    netCashFlow: number
+    savingsRate: number
+  }
+
+  topExpenses: Array<{
+    category: ExpenseCategory
+    label: string
+    amount: number
+    percentOfIncome: number
+  }>
+
+  familyBurden: {
+    totalMonthly: number
+    percentOfIncome: number
+    items: Array<{ name: string; amount: number }>
+    creditCardTotal: number
+    householdTotal: number
+    otherTotal: number
+  }
+
+  cashReserve: {
+    current: number
+    target: number
+    gap: number
+    progressPercent: number
+    monthsToTarget: number | null
+  }
+
+  monthlyTrend: Array<{
+    month: string
+    income: number
+    expenses: number
+    netCashFlow: number
+    savingsRate: number
+  }>
+
+  yearlyProjection: {
+    totalIncome: number
+    totalExpenses: number
+    totalNetCashFlow: number
+    averageMonthlySavingsRate: number
+    projectedYearEndCash: number
+    projectedYearEndNetWorth: number
+  }
 }
 
 // UI State
