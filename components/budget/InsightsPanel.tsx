@@ -70,7 +70,7 @@ function MonthlySummaryCard({ data }: { data: InsightsData }) {
                 "text-lg font-semibold font-mono tabular-nums",
                 monthlySummary.savingsRate >= 0 ? "text-positive" : "text-destructive"
               )}>
-                {formatPercentage(monthlySummary.savingsRate * 100, 1)}
+                {formatPercentage(monthlySummary.savingsRate, 1)}
               </span>
               <Badge variant={monthlySummary.savingsRate >= 0.2 ? "default" : monthlySummary.savingsRate >= 0 ? "outline" : "destructive"}>
                 {monthlySummary.savingsRate >= 0.2 ? "Healthy" : monthlySummary.savingsRate >= 0 ? "Low" : "Negative"}
@@ -98,7 +98,7 @@ function TopExpensesCard({ data }: { data: InsightsData }) {
               <div className="flex items-center justify-between text-xs">
                 <span className="font-medium">{label}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">{formatPercentage(percentOfIncome * 100, 0)}</span>
+                  <span className="text-muted-foreground">{formatPercentage(percentOfIncome, 0)}</span>
                   <span className="font-mono tabular-nums font-medium">{formatCurrency(amount)}</span>
                 </div>
               </div>
@@ -119,7 +119,7 @@ function FamilyBurdenCard({ data }: { data: InsightsData }) {
         <CardTitle>Family (Hector)</CardTitle>
         <CardDescription>
           <span className="flex items-center gap-2">
-            {formatPercentage(familyBurden.percentOfIncome * 100, 1)} of income
+            {formatPercentage(familyBurden.percentOfIncome, 1)} of income
             <Badge variant="destructive">{formatCurrency(familyBurden.totalMonthly)}/mo</Badge>
           </span>
         </CardDescription>
@@ -216,7 +216,7 @@ function CashReserveCard({ data }: { data: InsightsData }) {
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Progress</span>
             <span className="font-mono tabular-nums font-medium">
-              {formatPercentage(cashReserve.progressPercent * 100, 0)}
+              {formatPercentage(cashReserve.progressPercent, 0)}
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
@@ -274,7 +274,7 @@ function YearlyProjectionCard({ data }: { data: InsightsData }) {
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Avg Savings Rate</span>
             <span className="font-mono tabular-nums font-medium">
-              {formatPercentage(yearlyProjection.averageMonthlySavingsRate * 100, 1)}
+              {formatPercentage(yearlyProjection.averageMonthlySavingsRate, 1)}
             </span>
           </div>
           <Separator />
