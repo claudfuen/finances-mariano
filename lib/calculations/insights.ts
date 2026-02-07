@@ -42,6 +42,17 @@ export function computeInsights(config: BudgetConfig, month?: string): InsightsD
   const netCashFlow = totalIncome - totalExpenses
   const savingsRate = totalIncome > 0 ? netCashFlow / totalIncome : 0
 
+  // Projected bank balance at end of this month
+  const cashCurrent = config.cashReserve?.current ?? 0
+  const allMonths = Array.from({ length: 12 }, (_, i) => `${year}-${String(i + 1).padStart(2, "0")}`)
+  let projectedBalance = cashCurrent
+  for (const m of allMonths) {
+    const inc = calculateMonthlyIncome(config.income, m)
+    const exp = calculateMonthlyExpenses(config.expenses, m)
+    projectedBalance += inc - exp
+    if (m === referenceMonth) break
+  }
+
   // Top expenses by category
   const topCategories = getTopExpenseCategories(config.expenses, referenceMonth, 11)
   const topExpenses = topCategories.map(({ category, amount }) => ({
@@ -76,7 +87,6 @@ export function computeInsights(config: BudgetConfig, month?: string): InsightsD
   })
 
   // Cash reserve
-  const cashCurrent = config.cashReserve?.current ?? 0
   const cashTarget = config.cashReserve?.target ?? 0
   const cashGap = Math.max(0, cashTarget - cashCurrent)
   const monthsToTarget = netCashFlow > 0 && cashGap > 0 ? Math.ceil(cashGap / netCashFlow) : null
@@ -139,7 +149,7 @@ export function computeInsights(config: BudgetConfig, month?: string): InsightsD
   return {
     year,
     currentMonth: referenceMonth,
-    monthlySummary: { totalIncome, totalExpenses, netCashFlow, savingsRate },
+    monthlySummary: { totalIncome, totalExpenses, netCashFlow, savingsRate, projectedBalance: Math.round(projectedBalance) },
     topExpenses,
     familyBurden: {
       totalMonthly: familyTotal,

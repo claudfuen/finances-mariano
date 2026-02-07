@@ -207,6 +207,7 @@ export interface InsightsData {
     totalExpenses: number
     netCashFlow: number
     savingsRate: number
+    projectedBalance: number
   }
 
   topExpenses: Array<{

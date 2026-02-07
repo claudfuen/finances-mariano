@@ -51,7 +51,15 @@ function MonthlySummaryCard({ data }: { data: InsightsData }) {
         <CardDescription>{formatMonth(data.currentMonth)} {data.year}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="mb-3">
+          <StatItem
+            label="Projected Bank Balance"
+            value={formatCurrency(monthlySummary.projectedBalance)}
+            colorClass={monthlySummary.projectedBalance >= 0 ? "text-positive" : "text-destructive"}
+          />
+        </div>
+        <Separator />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mt-3">
           <StatItem
             label="Income"
             value={formatCurrency(monthlySummary.totalIncome)}
